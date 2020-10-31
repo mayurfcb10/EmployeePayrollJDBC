@@ -9,7 +9,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EmployeePayrollDBService {
 	private PreparedStatement employeePayrollDataStatement;
@@ -35,11 +37,52 @@ public class EmployeePayrollDBService {
 			employeePayrollDBService = new EmployeePayrollDBService();
 		return employeePayrollDBService;
 	}
-	
-public List<EmployeePayrollData> getEmployeeForDateRange(LocalDate startDate, LocalDate endDate) throws PayrollServiceException {
+
+	public List<EmployeePayrollData> getEmployeeForDateRange(LocalDate startDate, LocalDate endDate)
+			throws PayrollServiceException {
 		String sql = String.format("select * from employee_payroll where start between '%s' and '%s';",
-				Date.valueOf(startDate),Date.valueOf(endDate));
+				Date.valueOf(startDate), Date.valueOf(endDate));
 		return this.getEmployeePayrollDataUsingDB(sql);
+	}
+
+	public Map<String, Double> getAverageSalaryByGender() throws PayrollServiceException {
+		String sql = "select gender,avg(salary) as avg_salary from employee_payroll group by gender";
+		return getAggregateByGender("gender","avg_salary",sql);
+	}
+	
+	public Map<String, Double> getAggregateByGender(String gender, String aggregate, String sql){
+		Map<String, Double> genderCountMap = new HashMap<>();
+		try(Connection connection = this.getConnection();){
+			Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+			while(result.next()) {
+				String getgender = result.getString(gender);
+				Double count = result.getDouble(aggregate);
+				genderCountMap.put(getgender, count);
+			}
+		}catch (SQLException e) {
+			e.getMessage();
+		}
+		return genderCountMap;
+	}
+	public Map<String, Double> getCountByGender() {
+		String sql = "select gender,count(salary) as count_gender from employee_payroll group by gender";
+		return getAggregateByGender("gender","count_gender",sql);
+	}
+	
+public Map<String, Double> getMinimumByGender() {
+	String sql = "select gender,min(salary) as minSalary_gender from employee_payroll group by gender";
+	return getAggregateByGender("gender","minSalary_gender",sql);
+	}
+
+	public Map<String, Double> getMaximumByGender() {
+		String sql = "select gender,max(salary) as maxSalary_gender from employee_payroll group by gender";
+		return getAggregateByGender("gender","maxSalary_gender",sql);	
+	}
+	
+	public Map<String, Double> getSalarySumByGender() {
+		String sql = "select gender,sum(salary) as sumSalary_gender from employee_payroll group by gender";
+		return getAggregateByGender("gender","sumSalary_gender",sql);	
 	}
 
 	private List<EmployeePayrollData> getEmployeePayrollDataUsingDB(String sql) throws PayrollServiceException {
@@ -58,8 +101,8 @@ public List<EmployeePayrollData> getEmployeeForDateRange(LocalDate startDate, Lo
 			throw new PayrollServiceException(e.getMessage(), PayrollServiceException.ExceptionType.RETRIEVAL_PROBLEM);
 		}
 		return employeePayrollList;
-	
-}
+
+	}
 
 	public List<EmployeePayrollData> getEmployeePayrollData(String name) {
 		List<EmployeePayrollData> employeePayrollList = null;
@@ -106,7 +149,7 @@ public List<EmployeePayrollData> getEmployeeForDateRange(LocalDate startDate, Lo
 	public List<EmployeePayrollData> readData() throws PayrollServiceException {
 		String sql = "select * from employee_payroll";
 		return this.getEmployeePayrollDataUsingDB(sql);
-		
+
 	}
 
 	public int updateEmployeeData(String name, double salary) throws PayrollServiceException {

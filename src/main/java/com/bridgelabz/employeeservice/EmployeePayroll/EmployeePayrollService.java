@@ -94,9 +94,7 @@ public class EmployeePayrollService {
 	private EmployeePayrollData getEmployeePayrollData(String name) {
 		EmployeePayrollData employeePayrollData;
 		employeePayrollData = this.employeePayrollList.stream()
-				.filter(employeePayrollDataItem -> employeePayrollDataItem.name.equals(name))
-				.findFirst()
-				.orElse(null);
+				.filter(employeePayrollDataItem -> employeePayrollDataItem.name.equals(name)).findFirst().orElse(null);
 		return employeePayrollData;
 	}
 

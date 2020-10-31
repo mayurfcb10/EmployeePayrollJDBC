@@ -1,10 +1,13 @@
 package com.bridgelabz.employeeservice.EmployeePayroll;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.bridgelabz.employeeservice.EmployeePayroll.EmployeePayrollService.IOService;
 
 public class EmployeePayrollServiceTest {
 	static EmployeePayrollService employeePayrollService;
@@ -54,4 +57,20 @@ public class EmployeePayrollServiceTest {
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Teresa");
 		Assert.assertTrue(result);
 	}
+	
+	@Test
+	public void givenDateRange_WhenRetrieved_ShouldMatchEmployeeCount() throws PayrollServiceException {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		LocalDate startDate = LocalDate.of(2018, 01, 01);
+		LocalDate endDate = LocalDate.now();
+		List<EmployeePayrollData> employeePayrollData = employeePayrollService
+				.readEmployeePayrollForDateRange(IOService.DB_IO, startDate, endDate);
+		Assert.assertEquals(3, employeePayrollData.size());
+	}
+	
+//	@Test
+//	public void givnNewEmployee_WhenAdded_ShouldSyncEithDB() {
+//		
+//	}
 }

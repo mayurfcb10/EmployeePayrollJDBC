@@ -1,5 +1,6 @@
 package com.bridgelabz.employeeservice.EmployeePayroll;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -106,4 +107,11 @@ public class EmployeePayrollService {
 
 	}
 
+	public List<EmployeePayrollData> readEmployeePayrollForDateRange(IOService ioService, LocalDate startDate,
+			LocalDate endDate) throws PayrollServiceException {
+		if(ioService.equals(IOService.DB_IO))
+			return employeePayrollDBService.getEmployeeForDateRange(startDate, endDate);
+		
+		return null;
+	}
 }

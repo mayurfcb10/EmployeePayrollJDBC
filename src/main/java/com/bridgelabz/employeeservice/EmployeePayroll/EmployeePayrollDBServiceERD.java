@@ -9,6 +9,7 @@ import java.time.LocalDate;
 
 public class EmployeePayrollDBServiceERD {
 	private static EmployeePayrollDBServiceERD employeePayrollDBServiceERD;
+
 	private EmployeePayrollDBServiceERD() {
 	}
 
@@ -94,23 +95,24 @@ public class EmployeePayrollDBServiceERD {
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
-			throw new PayrollServiceException(e.getMessage(),
-					PayrollServiceException.ExceptionType.INSERTION_PROBLEM);
+			throw new PayrollServiceException(e.getMessage(), PayrollServiceException.ExceptionType.INSERTION_PROBLEM);
 		}
-		
+
 		try (Statement statement = connection.createStatement()) {
 			int dept_id1 = 105;
-			String sql1 = String.format("insert into employee_department (employee_id,dept_id) values('%s','%s')", employeeId, dept_id1);
+			String sql1 = String.format("insert into employee_department (employee_id,dept_id) values('%s','%s')",
+					employeeId, dept_id1);
 			statement.executeUpdate(sql1);
 			int dept_id = 101;
-			String sql = String.format("insert into employee_department (employee_id,dept_id) values('%s','%s')", employeeId, dept_id);
+			String sql = String.format("insert into employee_department (employee_id,dept_id) values('%s','%s')",
+					employeeId, dept_id);
 			int rowAffected1 = statement.executeUpdate(sql);
 			if (rowAffected1 == 1) {
 				employeePayrollData = new EmployeePayrollData(employeeId, name, salary, startDate);
 			}
 			if (rowAffected1 == 0)
 				throw new PayrollServiceException("insertion into employee_dept table is unsuccessful !!!",
-															PayrollServiceException.ExceptionType.INSERTION_PROBLEM);
+						PayrollServiceException.ExceptionType.INSERTION_PROBLEM);
 		} catch (PayrollServiceException e1) {
 			System.out.println(e1);
 			try {
@@ -127,7 +129,7 @@ public class EmployeePayrollDBServiceERD {
 			throw new PayrollServiceException("insertion into employee_dept table is unsuccessful !!!",
 					PayrollServiceException.ExceptionType.INSERTION_PROBLEM);
 		}
-		
+
 		try {
 			connection.commit();
 		} catch (SQLException e) {

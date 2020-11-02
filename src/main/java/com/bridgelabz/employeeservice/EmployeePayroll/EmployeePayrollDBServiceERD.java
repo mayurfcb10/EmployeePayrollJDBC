@@ -73,7 +73,7 @@ public class EmployeePayrollDBServiceERD {
 			throw new PayrollServiceException(e.getMessage(), PayrollServiceException.ExceptionType.INSERTION_PROBLEM);
 		}
 		try (Statement statement = connection.createStatement()) {
-			int dept_id = 105;
+			int dept_id = 116;
 			String dept_name = "Finance";
 			String sql = String.format("insert into department (dept_id,dept_name) values('%s','%s')", dept_id,
 					dept_name);
@@ -100,10 +100,10 @@ public class EmployeePayrollDBServiceERD {
 		
 		try (Statement statement = connection.createStatement()) {
 			int dept_id1 = 105;
-			String sql1 = String.format("insert into employee_dept (employee_id,dept_id) values('%s','%s')", employeeId, dept_id1);
+			String sql1 = String.format("insert into employee_department (employee_id,dept_id) values('%s','%s')", employeeId, dept_id1);
 			statement.executeUpdate(sql1);
 			int dept_id = 101;
-			String sql = String.format("insert into employee_dept (employee_id,dept_id) values('%s','%s')", employeeId, dept_id);
+			String sql = String.format("insert into employee_department (employee_id,dept_id) values('%s','%s')", employeeId, dept_id);
 			int rowAffected1 = statement.executeUpdate(sql);
 			if (rowAffected1 == 1) {
 				employeePayrollData = new EmployeePayrollData(employeeId, name, salary, startDate);

@@ -225,4 +225,10 @@ public class EmployeePayrollDBService {
 		}
 		return employeePayrollData;
 	}
+	
+	public List<EmployeePayrollData> readActiveEmployeeData() {
+		String sql = "select e.id,e.name,e.start,e.gender,e.salary, d.dept_name from employee_payroll e inner join"
+				+ " employee_department ed on e.id=ed.employee_id inner join department d on ed.dept_id=d.dept_id where is_active=true ;";
+		return this.getEmployeePayrollDataUsingQuery(sql);
+	}
 }

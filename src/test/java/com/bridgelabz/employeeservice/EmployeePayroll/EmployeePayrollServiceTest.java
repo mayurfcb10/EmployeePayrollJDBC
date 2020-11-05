@@ -47,7 +47,7 @@ public class EmployeePayrollServiceTest {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<EmployeePayrollData> entries = employeePayrollService
 				.readPayrollData(EmployeePayrollService.IOService.FILE_IO);
-		
+
 	}
 
 	@Test
@@ -57,14 +57,16 @@ public class EmployeePayrollServiceTest {
 		Assert.assertEquals(1, employeePayrollData.size());
 	}
 
-	/*@Test
+	
+	@Test
 	public void givenNewSalaryForEmployee_WhenUpdated_shouldSynchronizewithDataBase() throws PayrollServiceException {
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService
 				.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
 		employeePayrollService.updateEmployeeSalary("Teresa", 3000000.00);
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Teresa");
 		Assert.assertTrue(result);
-	}*/
+	}
+	
 
 	@Test
 	public void givenDateRange_WhenRetrieved_ShouldMatchEmployeeCount() throws PayrollServiceException {
@@ -85,15 +87,15 @@ public class EmployeePayrollServiceTest {
 		Assert.assertTrue(averageSalaryByGender.get("M").equals(5000000.00));
 	}
 
-	/*@Test
+	@Test
 	public void givenNewEmployee_whenAddedShouldSyncWithTheDatabase() throws PayrollServiceException {
 		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
 		employeePayrollService.addEmployeeToPayroll("Mark", 5000000.00, LocalDate.now(), "M");
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
 		Assert.assertTrue(result);
 	}
-	
-	@Test
+
+	/*@Test
 	public void givenEmployeeWhenRemoved_ShouldRemainInDatabase() throws PayrollServiceException {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
@@ -103,7 +105,7 @@ public class EmployeePayrollServiceTest {
 				.readActiveEmployeePayrollData(IOService.DB_IO);
 		Assert.assertEquals(4, employeePayrollData.size());
 	}*/
-	
+
 	@Test
 	public void given6Employees_whenAddedToDB_shouldMatchEmployeeEntries() throws PayrollServiceException {
 		EmployeePayrollData[] arrayOfEmps = { new EmployeePayrollData(0, "Jeff Bezos", 600000.0, LocalDate.now(), "M"),
@@ -117,8 +119,11 @@ public class EmployeePayrollServiceTest {
 		employeePayrollService.addEmployeesToPayroll(Arrays.asList(arrayOfEmps));
 		Instant end = Instant.now();
 		System.out.println("Duration without Thread; " + Duration.between(start, end));
+		Instant threadStart = Instant.now();
+		employeePayrollService.addEmployeesToPayrollWithThreads(Arrays.asList(arrayOfEmps));
+		Instant threadEnd = Instant.now();
+		System.out.println("Duration with Thread; " + Duration.between(threadStart, threadEnd));
 		Assert.assertEquals(13, employeePayrollService.countEntries(IOService.DB_IO));
 	}
-	
-	
+
 }

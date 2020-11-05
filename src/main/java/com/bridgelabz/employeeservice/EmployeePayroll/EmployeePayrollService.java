@@ -3,6 +3,7 @@ package com.bridgelabz.employeeservice.EmployeePayroll;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -49,26 +50,56 @@ public class EmployeePayrollService {
 		double salary = consoleInputReader.nextDouble();
 		employeePayrollList.add(new EmployeePayrollData(id, name, salary));
 	}
-	
+
 	/* Adding Employee Payroll using multithreads */
+	public void addEmployeesToPayrollWithThreads(List<EmployeePayrollData> employeePayrollDataList) {
+		Map<Integer, Boolean> employeeAdditionStatus = new HashMap<Integer, Boolean>();
+		employeePayrollDataList.forEach(employeePayrollData -> {
+			Runnable task = () -> {
+				employeeAdditionStatus.put(employeePayrollData.hashCode(), false);
+				System.out.println("Employee Being Added: " + Thread.currentThread().getName());
+				try {
+					this.addEmployeeToPayroll(employeePayrollData.name, employeePayrollData.salary,
+							employeePayrollData.start, employeePayrollData.gender1);
+				} catch (PayrollServiceException e) {
+					e.printStackTrace();
+				}
+				employeeAdditionStatus.put(employeePayrollData.hashCode(), true);
+				System.out.println("Employee Added " + Thread.currentThread().getName());
+			};
+			Thread thread = new Thread(task, employeePayrollData.name);
+			thread.start();
+		});
+		while(employeeAdditionStatus.containsValue(false)) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		System.out.println(employeePayrollDataList);
+
+	}
+
 	public void addEmployeesToPayroll(List<EmployeePayrollData> employeePayrollDataList) {
 		employeePayrollDataList.forEach(employeePayrollData -> {
-			System.out.println("Employee Being Added: "+employeePayrollData.name);
+			System.out.println("Employee Being Added: " + employeePayrollData.name);
 			try {
-				this.addEmployeeToPayroll(employeePayrollData.name, employeePayrollData.salary,employeePayrollData.start,employeePayrollData.gender1);
-				System.out.println("Employee Added:"+employeePayrollData.name);
+				this.addEmployeeToPayroll(employeePayrollData.name, employeePayrollData.salary,
+						employeePayrollData.start, employeePayrollData.gender1);
+				System.out.println("Employee Added:" + employeePayrollData.name);
 			} catch (PayrollServiceException e) {
 				e.printStackTrace();
 			}
 			System.out.println(this.employeePayrollList);
 		});
-		
-	}
-	
-	public void addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender) throws PayrollServiceException {
-		employeePayrollList.add(employeePayrollDBServiceERD.addEmployeeToPayroll(name, salary, startDate, gender));
+
 	}
 
+	public void addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender)
+			throws PayrollServiceException {
+		employeePayrollList.add(employeePayrollDBServiceERD.addEmployeeToPayroll(name, salary, startDate, gender));
+	}
 
 	/* Write Employee Payroll data to console */
 	public void writeEmployeePayrollData(IOService ioService) {
@@ -78,13 +109,12 @@ public class EmployeePayrollService {
 			new EmployeePayrollFileIOService().writeData(employeePayrollList);
 		}
 	}
-	
+
 	/* Print Employee Payroll */
 	public void printData(IOService fileIo) {
 		if (fileIo.equals(IOService.FILE_IO)) {
 			new EmployeePayrollFileIOService().printData();
 		}
-
 	}
 
 	public long countEntries(IOService fileIo) {
@@ -166,17 +196,18 @@ public class EmployeePayrollService {
 			return employeePayrollDBService.getSalarySumByGender();
 		return null;
 	}
-	
+
 	public int removeEmployeeFromPayroll(String name, IOService ioService) {
-		int employeeCount=0;
+		int employeeCount = 0;
 		if (ioService.equals(IOService.DB_IO))
-			employeeCount=employeePayrollDBServiceERD.removeEmployee(name);
+			employeeCount = employeePayrollDBServiceERD.removeEmployee(name);
 		return employeeCount;
 	}
-	
-	/*public List<EmployeePayrollData> readActiveEmployeePayrollData(IOService ioService) {
-		if (ioService.equals(IOService.DB_IO))
-			this.employeePayrollList = employeePayrollDBService.readActiveEmployeeData();
-		return this.employeePayrollList;
-	}*/
+
+	/*
+	 * public List<EmployeePayrollData> readActiveEmployeePayrollData(IOService
+	 * ioService) { if (ioService.equals(IOService.DB_IO)) this.employeePayrollList
+	 * = employeePayrollDBService.readActiveEmployeeData(); return
+	 * this.employeePayrollList; }
+	 */
 }

@@ -1,6 +1,7 @@
 package com.bridgelabz.employeeservice.EmployeePayroll;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class EmployeePayrollData {
 
@@ -11,7 +12,7 @@ public class EmployeePayrollData {
 	private String[] dept_name;
 	private char gender;
 	public String gender1;
-	
+
 	/* Constructor */
 	public EmployeePayrollData(int id, String name, double salary) {
 		this.id = id;
@@ -19,24 +20,16 @@ public class EmployeePayrollData {
 		this.salary = salary;
 	}
 
-	public EmployeePayrollData(int id, String name, double salary, LocalDate startDate, char gender, String[] dept_name) {
+	public EmployeePayrollData(int id, String name, double salary, LocalDate startDate, char gender,
+			String[] dept_name) {
 		this(id, name, salary, startDate);
 		this.gender = gender;
 		this.dept_name = dept_name;
 	}
 
-	
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + id;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		long temp;
-		temp = Double.doubleToLongBits(salary);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + ((start == null) ? 0 : start.hashCode());
-		return result;
+		return Objects.hash(name, salary, start, gender1);
 	}
 
 	@Override
@@ -67,19 +60,19 @@ public class EmployeePayrollData {
 
 	/* Constructor */
 	public EmployeePayrollData(int id, String name, double salary, LocalDate start) {
-		this(id,name,salary);
+		this(id, name, salary);
 		this.start = start;
 	}
-	
-	public EmployeePayrollData(int id, String name, double salary, LocalDate start,String gender1) {
-		this(id,name,salary,start);
+
+	public EmployeePayrollData(int id, String name, double salary, LocalDate start, String gender1) {
+		this(id, name, salary, start);
 		this.gender1 = gender1;
 	}
 
-	public EmployeePayrollData(int id, String name, Double salary, LocalDate startDate, char gender) {
-		this(id,name,salary,startDate);
-		this.gender = gender;
-	}
+//	public EmployeePayrollData(int id, String name, Double salary, LocalDate startDate, char gender) {
+//		this(id,name,salary,startDate);
+//		this.gender = gender;
+//	}
 
 	@Override
 	public String toString() {

@@ -45,10 +45,6 @@ public class EmployeePayrollDBService {
 			throws PayrollServiceException {
 		String sql = String.format("select * from employee_payroll where start between '%s' and '%s';",
 				Date.valueOf(startDate), Date.valueOf(endDate));
-/*		String sql = String.format(
-				"SELECT e.id,e.name,e.start,e.gender,e.salary, d.dept_name from employee_payroll e inner join "
-						+ "employee_department ed on e.id=ed.employee_id inner join department d on ed.dept_id=d.dept_id where start between '%s' AND '%s';",
-				Date.valueOf(startDate), Date.valueOf(endDate));*/
 		return this.getEmployeePayrollDataUsingDB(sql);
 	}
 
@@ -136,11 +132,6 @@ public class EmployeePayrollDBService {
 				Double salary = result.getDouble("salary");
 				LocalDate startDate = result.getDate("start").toLocalDate();
 				String gender = result.getString("gender");
-				//String dept = result.getString("dept_name");
-				//departmentName.add(dept);
-				//String[] deptArray = new String[departmentName.size()];
-				/*employeePayrollList.add(new EmployeePayrollData(id, name, salary, startDate, gender,
-						departmentName.toArray(deptArray)));*/
 				employeePayrollList.add(new EmployeePayrollData(id, name, salary, startDate, gender));
 			}
 		} catch (SQLException e) {
@@ -152,8 +143,6 @@ public class EmployeePayrollDBService {
 	private void prepareStatementForEmployeeData() {
 		try {
 			Connection connection = this.getConnection();
-//			String sql = "SELECT e.id,e.name,e.start,e.gender,e.salary, d.dept_name from employee_payroll e inner join "
-//					+ "employee_department ed on e.id=ed.employee_id inner join department d on ed.dept_id=d.dept_id WHERE name=?";
 			String sql = "select * from employee_payroll where name = ?";
 			employeePayrollDataStatement = connection.prepareStatement(sql);
 		} catch (SQLException e) {
@@ -230,9 +219,9 @@ public class EmployeePayrollDBService {
 		return employeePayrollData;
 	}
 	
-	/*public List<EmployeePayrollData> readActiveEmployeeData() {
+	public List<EmployeePayrollData> readActiveEmployeeData() {
 		String sql = "select e.id,e.name,e.start,e.gender,e.salary, d.dept_name from employee_payroll e inner join"
 				+ " employee_department ed on e.id=ed.employee_id inner join department d on ed.dept_id=d.dept_id where is_active=true ;";
 		return this.getEmployeePayrollDataUsingQuery(sql);
-	}*/
+	}
 }

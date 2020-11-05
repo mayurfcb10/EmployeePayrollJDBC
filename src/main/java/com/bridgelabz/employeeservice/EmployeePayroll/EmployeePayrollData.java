@@ -10,6 +10,7 @@ public class EmployeePayrollData {
 	public LocalDate start;
 	private String[] dept_name;
 	private char gender;
+	public String gender1;
 	
 	/* Constructor */
 	public EmployeePayrollData(int id, String name, double salary) {
@@ -68,6 +69,16 @@ public class EmployeePayrollData {
 	public EmployeePayrollData(int id, String name, double salary, LocalDate start) {
 		this(id,name,salary);
 		this.start = start;
+	}
+	
+	public EmployeePayrollData(int id, String name, double salary, LocalDate start,String gender1) {
+		this(id,name,salary,start);
+		this.gender1 = gender1;
+	}
+
+	public EmployeePayrollData(int id, String name, Double salary, LocalDate startDate, char gender) {
+		this(id,name,salary,startDate);
+		this.gender = gender;
 	}
 
 	@Override

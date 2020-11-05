@@ -74,6 +74,7 @@ public class EmployeePayrollDBServiceERD {
 			}
 			throw new PayrollServiceException(e.getMessage(), PayrollServiceException.ExceptionType.INSERTION_PROBLEM);
 		}
+		/*
 		try (Statement statement = connection.createStatement()) {
 			int dept_id = 116;
 			String dept_name = "Finance";
@@ -129,7 +130,7 @@ public class EmployeePayrollDBServiceERD {
 			}
 			throw new PayrollServiceException("insertion into employee_dept table is unsuccessful !!!",
 					PayrollServiceException.ExceptionType.INSERTION_PROBLEM);
-		}
+		}*/
 
 		try {
 			connection.commit();

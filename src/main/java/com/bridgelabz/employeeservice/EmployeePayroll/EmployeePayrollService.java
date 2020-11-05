@@ -50,6 +50,21 @@ public class EmployeePayrollService {
 		employeePayrollList.add(new EmployeePayrollData(id, name, salary));
 	}
 	
+	/* Adding Employee Payroll using multithreads */
+	public void addEmployeesToPayroll(List<EmployeePayrollData> employeePayrollDataList) {
+		employeePayrollDataList.forEach(employeePayrollData -> {
+			System.out.println("Employee Being Added: "+employeePayrollData.name);
+			try {
+				this.addEmployeeToPayroll(employeePayrollData.name, employeePayrollData.salary,employeePayrollData.start,employeePayrollData.gender1);
+				System.out.println("Employee Added:"+employeePayrollData.name);
+			} catch (PayrollServiceException e) {
+				e.printStackTrace();
+			}
+			System.out.println(this.employeePayrollList);
+		});
+		
+	}
+	
 	public void addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender) throws PayrollServiceException {
 		employeePayrollList.add(employeePayrollDBServiceERD.addEmployeeToPayroll(name, salary, startDate, gender));
 	}
@@ -76,7 +91,7 @@ public class EmployeePayrollService {
 		if (fileIo.equals(IOService.FILE_IO)) {
 			return new EmployeePayrollFileIOService().countEntries();
 		}
-		return 0;
+		return employeePayrollList.size();
 	}
 
 	public List<EmployeePayrollData> readPayrollData(IOService ioService) {
@@ -86,6 +101,7 @@ public class EmployeePayrollService {
 	}
 
 	public List<EmployeePayrollData> readEmployeePayrollData(IOService ioService) throws PayrollServiceException {
+		employeePayrollList = null;
 		if (ioService.equals(IOService.DB_IO))
 			this.employeePayrollList = employeePayrollDBService.readData();
 		return employeePayrollList;
@@ -157,10 +173,10 @@ public class EmployeePayrollService {
 			employeeCount=employeePayrollDBServiceERD.removeEmployee(name);
 		return employeeCount;
 	}
-
-	public List<EmployeePayrollData> readActiveEmployeePayrollData(IOService ioService) {
+	
+	/*public List<EmployeePayrollData> readActiveEmployeePayrollData(IOService ioService) {
 		if (ioService.equals(IOService.DB_IO))
 			this.employeePayrollList = employeePayrollDBService.readActiveEmployeeData();
 		return this.employeePayrollList;
-	}
+	}*/
 }

@@ -69,11 +69,6 @@ public class EmployeePayrollData {
 		this.gender1 = gender1;
 	}
 
-//	public EmployeePayrollData(int id, String name, Double salary, LocalDate startDate, char gender) {
-//		this(id,name,salary,startDate);
-//		this.gender = gender;
-//	}
-
 	@Override
 	public String toString() {
 		return "EmployeePayrollData [ID=" + id + ", Name=" + name + ", Salary=" + salary + ", Start=" + start + "]";

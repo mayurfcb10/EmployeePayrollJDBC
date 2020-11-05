@@ -45,10 +45,10 @@ public class EmployeePayrollDBService {
 			throws PayrollServiceException {
 		String sql = String.format("select * from employee_payroll where start between '%s' and '%s';",
 				Date.valueOf(startDate), Date.valueOf(endDate));
-//		String sql = String.format(
-//				"SELECT e.id,e.name,e.start,e.gender,e.salary, d.dept_name from employee_payroll e inner join "
-//						+ "employee_department ed on e.id=ed.employee_id inner join department d on ed.dept_id=d.dept_id where start between '%s' AND '%s';",
-//				Date.valueOf(startDate), Date.valueOf(endDate));
+/*		String sql = String.format(
+				"SELECT e.id,e.name,e.start,e.gender,e.salary, d.dept_name from employee_payroll e inner join "
+						+ "employee_department ed on e.id=ed.employee_id inner join department d on ed.dept_id=d.dept_id where start between '%s' AND '%s';",
+				Date.valueOf(startDate), Date.valueOf(endDate));*/
 		return this.getEmployeePayrollDataUsingDB(sql);
 	}
 

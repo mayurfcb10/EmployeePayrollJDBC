@@ -10,8 +10,8 @@ public class EmployeePayrollData {
 	public double salary;
 	public LocalDate start;
 	private String[] dept_name;
-	private char gender;
-	public String gender1;
+	//private char gender;
+	public String gender;
 
 	/* Constructor */
 	public EmployeePayrollData(int id, String name, double salary) {
@@ -20,7 +20,7 @@ public class EmployeePayrollData {
 		this.salary = salary;
 	}
 
-	public EmployeePayrollData(int id, String name, double salary, LocalDate startDate, char gender,
+	public EmployeePayrollData(int id, String name, double salary, LocalDate startDate, String gender,
 			String[] dept_name) {
 		this(id, name, salary, startDate);
 		this.gender = gender;
@@ -29,7 +29,7 @@ public class EmployeePayrollData {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name, salary, start, gender1);
+		return Objects.hash(name, salary, start, gender);
 	}
 
 	@Override
@@ -64,9 +64,14 @@ public class EmployeePayrollData {
 		this.start = start;
 	}
 
-	public EmployeePayrollData(int id, String name, double salary, LocalDate start, String gender1) {
+	public EmployeePayrollData(int id, String name, double salary, LocalDate start, String gender) {
 		this(id, name, salary, start);
-		this.gender1 = gender1;
+		this.gender = gender;
+	}
+
+	public EmployeePayrollData(String name, double salary) {
+		this.name = name;
+		this.salary = salary;
 	}
 
 	@Override

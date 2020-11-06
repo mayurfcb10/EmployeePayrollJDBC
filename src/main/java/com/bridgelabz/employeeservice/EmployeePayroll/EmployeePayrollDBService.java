@@ -22,7 +22,7 @@ public class EmployeePayrollDBService {
 
 	}
 
-	public static synchronized Connection getConnection() throws SQLException {
+	public static Connection getConnection() throws SQLException {
 		connectionCounter++;
 		String jdbcURL = "jdbc:mysql://localhost:3306/service_payroll?useSSl=false";
 		String userName = "root";
@@ -173,14 +173,73 @@ public class EmployeePayrollDBService {
 	}
 
 	private int updateEmployeeDataUsingStatement(String name, double salary) throws PayrollServiceException {
-		String sql = String.format("update employee_payroll set salary = %.2f where name = '%s';", salary, name);
+	//	String sql = String.format("update employee_payroll set salary = %.2f where name = '%s';", salary, name);
+//		try {
+//			Connection connection = this.getConnection();
+//			Statement statement = connection.createStatement();
+//			return statement.executeUpdate(sql);
+//		} catch (SQLException e) {
+//			throw new PayrollServiceException(e.getMessage(), PayrollServiceException.ExceptionType.UPDATE_PROBLEM);
+//		}
+//		
+		Connection connection = null;
+		int rowAffected=0;
+		int employeeId = -1;
 		try {
-			Connection connection = this.getConnection();
-			Statement statement = connection.createStatement();
-			return statement.executeUpdate(sql);
+			connection = this.getConnection();
+			connection.setAutoCommit(false);
 		} catch (SQLException e) {
-			throw new PayrollServiceException(e.getMessage(), PayrollServiceException.ExceptionType.UPDATE_PROBLEM);
+			e.printStackTrace();
 		}
+		try (java.sql.Statement statement = connection.createStatement();) {
+			String sql = String.format("update employee_payroll set salary = %.2f where name = '%s';", salary, name);
+			rowAffected = statement.executeUpdate(sql, statement.RETURN_GENERATED_KEYS);
+			if (rowAffected == 1) {
+				ResultSet resultSet = statement.getGeneratedKeys();
+				if (resultSet.next())
+					employeeId = resultSet.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			try {
+				connection.rollback();
+				return rowAffected;
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}
+		try (java.sql.Statement statement = connection.createStatement();) {
+			double deductions = salary * 0.2;
+			double taxablePay = salary - deductions;
+			double tax = taxablePay * 0.1;
+			double netPay = salary - tax;
+			String sql = String.format("update payroll_details set basic_pay=%.2f,deductions=%.2f,taxable_pay=%.2f,tax=%.2f,net_pay=%.2f where employee_id='%s';",employeeId, salary, deductions, taxablePay, tax, netPay);
+
+			rowAffected = statement.executeUpdate(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			try {
+				connection.rollback();
+				return rowAffected;
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}
+		try {
+			connection.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return rowAffected;
 	}
 
 	public int updateEmployeeDataUsingPreparedStatement(String name, double salary) {

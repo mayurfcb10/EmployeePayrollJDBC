@@ -5,10 +5,12 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -16,8 +18,13 @@ import org.junit.Test;
 //import com.bridgelabz.employeepayroll.PayrollServiceException;
 import com.bridgelabz.employeeservice.EmployeePayroll.EmployeePayrollService.IOService;
 
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+
 public class EmployeePayrollServiceTest {
 	static EmployeePayrollService employeePayrollService;
+	public static boolean finalResult = true;
 
 	@BeforeClass
 	public static void initializeConstructor() {
@@ -62,8 +69,8 @@ public class EmployeePayrollServiceTest {
 	public void givenNewSalaryForEmployee_WhenUpdated_shouldSynchronizewithDataBase() throws PayrollServiceException {
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService
 				.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
-		employeePayrollService.updateEmployeeSalary("Teresa", 3000000.00);
-		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Teresa");
+		employeePayrollService.updateEmployeeSalary("Bill Gates", 3000000.00,IOService.DB_IO );
+		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Bill Gates");
 		Assert.assertTrue(result);
 	}
 	
@@ -95,7 +102,7 @@ public class EmployeePayrollServiceTest {
 		Assert.assertTrue(result);
 	}
 
-	/*@Test
+	@Test
 	public void givenEmployeeWhenRemoved_ShouldRemainInDatabase() throws PayrollServiceException {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
@@ -104,7 +111,7 @@ public class EmployeePayrollServiceTest {
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService
 				.readActiveEmployeePayrollData(IOService.DB_IO);
 		Assert.assertEquals(4, employeePayrollData.size());
-	}*/
+	}
 
 	@Test
 	public void given6Employees_whenAddedToDB_shouldMatchEmployeeEntries() throws PayrollServiceException {
@@ -125,5 +132,27 @@ public class EmployeePayrollServiceTest {
 		System.out.println("Duration with Thread; " + Duration.between(threadStart, threadEnd));
 		Assert.assertEquals(13, employeePayrollService.countEntries(IOService.DB_IO));
 	}
-
+	
+	@Test
+	public void givenNewSalaryForEmployee_WhenUpdated_MultipleEmployeeSalary_shouldSynchronizewithDataBase() throws PayrollServiceException {
+		EmployeePayrollData[] arrayOfEmps = { new EmployeePayrollData("Bill Gates", 9200000.00),
+				new EmployeePayrollData("Mukesh Ambani", 3100000.00), 
+				new EmployeePayrollData("Mark Zuckerberg", 4000000.00)
+				 };
+		employeePayrollService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
+		Instant start = Instant.now();
+		employeePayrollService.updateEmployeeSalary(Arrays.asList(arrayOfEmps));
+		Instant end = Instant.now();
+		System.out.println("Duration without thread: " + Duration.between(start, end));
+		List<EmployeePayrollData> employeePayrollDataList = Arrays.asList(arrayOfEmps);
+		employeePayrollDataList.forEach(employeePayrollData -> {
+			Runnable task = () -> {
+				boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB(employeePayrollData.name);
+				finalResult ^= result;
+			};
+			Thread thread = new Thread(task, employeePayrollData.name);
+			thread.start();
+		});
+		Assert.assertTrue(finalResult);
+	}
 }

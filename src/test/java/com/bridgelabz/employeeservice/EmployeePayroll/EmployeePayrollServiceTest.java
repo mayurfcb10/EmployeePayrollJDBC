@@ -155,4 +155,28 @@ public class EmployeePayrollServiceTest {
 		});
 		Assert.assertTrue(finalResult);
 	}
+	
+	@Test
+    public void givenNeEmployeeWhenAddedShouldMatch201ResponseAndCount() throws PayrollServiceException {
+    	EmployeePayrollData[] arrayOfEmps = getEmployeeList();
+    	employeePayrollService = new EmployeePayrollService(Arrays.asList(arrayOfEmps));
+    	EmployeePayrollData employeePayrollData =null;
+    	employeePayrollData = new EmployeePayrollData(0, "Mukesh Ambani", 8000000.00, LocalDate.now(),"M");
+    	Response response = addEmployeeToJsonServer(employeePayrollData);
+    	int statusCode = response.getStatusCode();
+    	Assert.assertEquals(201, statusCode);
+    	employeePayrollData = new Gson().fromJson(response.asString(), EmployeePayrollData.class);
+    	employeePayrollService.addEmployeeToPayroll(employeePayrollData, IOService.REST_IO);
+    	  long entries = employeePayrollService.countEntries(EmployeePayrollService.IOService.REST_IO);
+    	  System.out.println("Employee Payroll entires in JSON Server: \n"+response.asString());
+          Assert.assertEquals(3,entries);
+    }
+
+	private Response addEmployeeToJsonServer(EmployeePayrollData employeePayrollData) {
+		String employeeJson = new Gson().toJson(employeePayrollData);
+		RequestSpecification request = RestAssured.given();
+		request.header("Content-Type", "application/json");
+		request.body(employeeJson);
+		return request.post("/employees");
+	}
 }

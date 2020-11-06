@@ -71,7 +71,7 @@ public class EmployeePayrollRestAssureTest {
 		return request.post("/employees");
 	}
 	
-	/* Added Muliple Employees in Employee Payroll Json */
+	/* Added Multiple Employees in Employee Payroll Json */
 	@Test
 	public void givenEmployeeListWhenAdded_shouldMatch201andCount() throws PayrollServiceException {
 		EmployeePayrollData[] arrayOfEmps = getEmployeeList();
@@ -95,7 +95,23 @@ public class EmployeePayrollRestAssureTest {
 		
 	}
 	
-
+	/* Updated salary of the Employee in Employee Payroll Json */
+	@Test
+	public void givenSalaryForEmployee_whenUpdated_ShouldMatch200Response() throws PayrollServiceException {
+		EmployeePayrollData[] arrayOfEmps = getEmployeeList();
+		employeePayrollService = new EmployeePayrollService(Arrays.asList(arrayOfEmps));
+		
+		employeePayrollService.updateEmployeeSalary("Anil Ambani", 1500000, IOService.REST_IO);
+		EmployeePayrollData employeePayrollData = employeePayrollService.getEmployeePayrollData("Anil Ambani");
+		
+		String employeeJson = new Gson().toJson(employeePayrollData);
+		RequestSpecification request = RestAssured.given();
+		request.header("Content-Type", "application/json");
+		request.body(employeeJson);
+		Response response = request.put("/employees/"+employeePayrollData.id);
+		int statusCode = response.getStatusCode();
+    	Assert.assertEquals(200, statusCode);
+	}
 	
 }
 
